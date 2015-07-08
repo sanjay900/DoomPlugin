@@ -1,0 +1,7 @@
+ name: DoomPlugin
+ main: com.sanjay900.DoomPlugin.DoomPlugin
+ version: 0.1
+ depend: [Multiverse-Core, Citizens, Carbon]
+ commands:
+    doom:
+        description: General Doom commands

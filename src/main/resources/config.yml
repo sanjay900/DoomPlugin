@@ -1,0 +1,22 @@
+# Doom Configuration Example
+#mapName: ##Name of your map
+#   world: doom ##World your map resides in
+#  	spawnLoc: 1,2,3 ## Location a player spawns in
+#	entities: ##Entities
+#		id: ## entity id - a unique name. This will be corrected by the plugin as long as its unique. 
+#			location:1,1,1 ##spawn location
+#     type: ##Doom Entity type (Imp, )
+#	items: ##items
+#		id: 
+#			location:1,2,3 ##item location
+#			type:##item id - id:data or id:data:amount or weapon for a crackshot weapon or material | material:amount
+doom: 
+    spawnLoc: 1,2,3
+    entities:
+        0: 
+          spawnLoc: 1,1,1
+          entityType: imp
+    items:
+        0: 
+          spawnLoc: 1,1,1
+          entityType: shotgun:1
