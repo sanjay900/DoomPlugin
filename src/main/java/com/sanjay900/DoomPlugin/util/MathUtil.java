@@ -325,8 +325,7 @@ package com.sanjay900.DoomPlugin.util;
 		 * @return Vector rotated by the angle
 		 */
 		public static Vector rotate(float yaw, float pitch, double x, double y, double z) {
-			// Conversions found by (a lot of) testing
-			float angle;
+						float angle;
 			angle = yaw * DEGTORAD;
 			double sinyaw = Math.sin(angle);
 			double cosyaw = Math.cos(angle);

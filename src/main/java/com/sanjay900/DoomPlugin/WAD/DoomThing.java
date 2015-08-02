@@ -4,25 +4,18 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.LinkedHashMap;
 import java.util.Map;
-//A doom thing is an entity or item
 public class DoomThing {
-	//Coordinates
-	short x;
+		short x;
 	short y;
 	short angle;
-	//The type of thing this is
-	DoomThingType type;
-	//flags
-	short flags;
-	//Skill levels this thing is shown in
-	private boolean skill1and2;
+		DoomThingType type;
+		short flags;
+		private boolean skill1and2;
 	private boolean skill3;
 	private boolean skill4and5;
 	private boolean deaf;
-	//Multiplayer only
-	private boolean multiOnly;
-	//Construct a DoomThing from a lump of data
-	public DoomThing(byte[] data) {
+		private boolean multiOnly;
+		public DoomThing(byte[] data) {
 		ByteBuffer bb = ByteBuffer.wrap(data);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 		this.x = bb.getShort(0);
@@ -38,8 +31,7 @@ public class DoomThing {
 		multiOnly = (flags & 0x0010) != 0;
 
 	}
-	//getters
-	public boolean isSkill1and2() {
+		public boolean isSkill1and2() {
 		return skill1and2;
 	}
 	public boolean isSkill3() {
@@ -54,12 +46,10 @@ public class DoomThing {
 	public boolean isMultiOnly() {
 		return multiOnly;
 	}
-	//Doom things are split into several catagories.
-	public enum DoomThingCatagory {
+		public enum DoomThingCatagory {
 		Artifact,Powerup,Weapon,Ammunition,Key,Monster,Obstacle,Decoration,Other
 	}
-	//These are the types a thing can be. Each is given its catagory.
-	public enum DoomThingType {
+		public enum DoomThingType {
 		/**Artifact item*/
 		Berserk(2023,DoomThingCatagory.Artifact),ComputerMap(2026,DoomThingCatagory.Artifact),
 		HealthPotion(2014,DoomThingCatagory.Artifact),Invisibility(2024,DoomThingCatagory.Artifact),Invulnerability(2022,DoomThingCatagory.Artifact),
@@ -97,28 +87,22 @@ public class DoomThing {
 		Bloodymess(10,DoomThingCatagory.Decoration), Bloodymess2(12,DoomThingCatagory.Decoration), Candle(34,DoomThingCatagory.Decoration), Deadcacodemon(22,DoomThingCatagory.Decoration), Deaddemon(21,DoomThingCatagory.Decoration), Deadformberhuman(18,DoomThingCatagory.Decoration), Deadformersergeant(19,DoomThingCatagory.Decoration), Deadimp(20,DoomThingCatagory.Decoration), Deadlostsoul(23,DoomThingCatagory.Decoration), Deadplayer(15,DoomThingCatagory.Decoration), Hangingleg(62,DoomThingCatagory.Decoration), Hangingpairoflegs(60,DoomThingCatagory.Decoration), Hangingvictimarmsout2(59,DoomThingCatagory.Decoration),  Hangingvictimonelegged(61,DoomThingCatagory.Decoration),  Hangingvictimtwitching2(63,DoomThingCatagory.Decoration),  Poolofblood(79,DoomThingCatagory.Decoration), Poolofblood2(80,DoomThingCatagory.Decoration), Poolofbloodandflesh(24,DoomThingCatagory.Decoration), Poolofbrains(81,DoomThingCatagory.Decoration), 
 		/**Other*/
 		Player1(1,DoomThingCatagory.Other),Player2(2,DoomThingCatagory.Other),Player3(3,DoomThingCatagory.Other),Player4(4,DoomThingCatagory.Other),BossBrain(88,DoomThingCatagory.Other),DeathMatchStart(11,DoomThingCatagory.Other),SpawnShooter(89,DoomThingCatagory.Other),SpawnSpot(87,DoomThingCatagory.Other),TeleportLanding(14,DoomThingCatagory.Other);
-		//A few global varialbes to this thing type
-		private final int id;
+				private final int id;
 		private final DoomThingCatagory type;
-		//Constructior for a thing type
-		DoomThingType(int id, DoomThingCatagory type) {
+				DoomThingType(int id, DoomThingCatagory type) {
 			this.id = id;
 			this.type = type;
 		}
-		//This HashMap stores the thingtype and its id
-		private static final Map<Integer, DoomThingType> BY_CODE_MAP = new LinkedHashMap<>();
+				private static final Map<Integer, DoomThingType> BY_CODE_MAP = new LinkedHashMap<>();
 		static {
 			for (DoomThingType thing : DoomThingType.values()) {
 				BY_CODE_MAP.put(thing.id, thing);
 			}
 		}
-		//This lets us get a thing type from its id
-		public static DoomThingType forCode(int code) {
+				public static DoomThingType forCode(int code) {
 			return BY_CODE_MAP.get(code);
 		}
-		//This gets the catagory of this doom thing
-		public DoomThingCatagory getDoomThingCatagory() {return type;}
-		//This returns the id of this doom thing
-		public double getId() { return id; }
+				public DoomThingCatagory getDoomThingCatagory() {return type;}
+				public double getId() { return id; }
 	}
 }

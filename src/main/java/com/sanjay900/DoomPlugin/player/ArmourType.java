@@ -17,8 +17,7 @@ public enum ArmourType {
 	The megaarmour (blue vest) maxes out armour to 200%, if it is less. It absorbs one-half of damage. Diamond Chest Plate
 	The megasphere (gray sphere) acts like the megaarmour, in addition to maxing out health.
  */
-	//Define the Normal and Mega armour types
-	/** 
+		/** 
 	 * Normal Armour
 	 * @see ArmourType
 	 */
@@ -35,14 +34,11 @@ public enum ArmourType {
      * @see ArmourType
      */
 	Material getMaterial() {
-		//Is this normal armour?
-		if (this.equals(ArmourType.NORMAL)) {
-			//Normal armour is represented by an Iron chestplate, so return one.
-			return Material.IRON_CHESTPLATE;
+				if (this.equals(ArmourType.NORMAL)) {
+						return Material.IRON_CHESTPLATE;
 		}
 		if (this.equals(ArmourType.MEGA)) {
-			//Mega armour is represented by an diamond chestplate, so return one.
-			return Material.DIAMOND_CHESTPLATE;
+						return Material.DIAMOND_CHESTPLATE;
 		}
 		return null;
 		
@@ -57,19 +53,15 @@ public enum ArmourType {
      * @see ArmourType
      */
 	static ArmourType getArmourType(int percentage) {
-		//You dont have armour if your armour percentage is less than 1
-		if (percentage < 1) {
+				if (percentage < 1) {
 			return null;
 		} else
-			//1 - 100% is normal armour
-		if (percentage < 100) {
+					if (percentage < 100) {
 			return ArmourType.NORMAL;
 		}else if (percentage < 200){
-			//100% + is mega armour
-			return ArmourType.MEGA;
+						return ArmourType.MEGA;
 		}
-		//Its impossible to go past 200%, but if you do, your armour is invalid.
-		return null;
+				return null;
 	}
 	/**
      * Convert from a Bukkit Material to an ArmourType

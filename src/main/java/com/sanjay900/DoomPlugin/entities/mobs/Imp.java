@@ -12,14 +12,11 @@ import com.sanjay900.DoomPlugin.attacks.Melee;
  * @see #isDead()
  */
 public class Imp extends DoomEntity{
-	//Create an instance of a doom entity
-	public Imp(DoomPlugin plugin, Location location) {
-		//pass a few variables to doom entity
-		super(plugin, location, EntityType.ZOMBIE, "Imp", 20, 9, new FireballWeapon(), new Melee());
+		public Imp(DoomPlugin plugin, Location location) {
+				super(plugin, location, EntityType.ZOMBIE, "Imp", 20, 9, new FireballWeapon(), new Melee());
 
 	}
-	//TODO: An imps entity logic
-	@Override
+		@Override
 	public void entityLogic() {
 		
 	}

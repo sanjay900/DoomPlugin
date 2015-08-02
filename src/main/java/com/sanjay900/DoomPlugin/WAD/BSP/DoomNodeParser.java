@@ -45,8 +45,10 @@ public class DoomNodeParser {
 	ArrayList<DoomSector> sectors = new ArrayList<>();
 	ArrayList<DoomSubSector> subsectors = new ArrayList<>();
 	ArrayList<DoomSegment> segments = new ArrayList<>();
-	LinkedHashMap<DoomLine,DoomSide[]> lines = new LinkedHashMap<>();
 	int[] shift = new int[2] ;
+
+	ArrayList<DoomLine> lines = new ArrayList<>();
+	ArrayList<DoomSide> sides = new ArrayList<>();
 	private UUID playerUUID;
 
 	public DoomNodeParser(String name, DoomPlugin plugin, UUID playerUUID, World world) {
@@ -57,8 +59,7 @@ public class DoomNodeParser {
 
 	}
 	public void convertToDoomLevel() {
-		//TODO: In this function, convert from WadLevel to DoomLevel
-	}
+			}
 	public void drawSector(DoomSubSector s) {
 		int blockData =new Random().nextInt(15); 
 		for (DoomSegment seg : s.getSegments()) {
@@ -77,14 +78,11 @@ public class DoomNodeParser {
 
 		Bukkit.getPlayer(playerUUID).sendMessage(name);
 		if (name.equals("E1M1")) {
-			for (Entry<DoomLine, DoomSide[]> entry: lines.entrySet()) {
-				DoomLine l = entry.getKey();
+			for (DoomLine l : lines) {
 				int[] a = normalize(vertices.get(l.getA()));
 				int[] b = normalize(vertices.get(l.getB()));
-				//DoomSector s = sectors.get(l.getSector());
-
-				//drawLine(a[0],a[1],b[0],b[1],s,Material.WOOL,data);	
-			}
+				
+							}
 		}
 		if (name.equals("E1M1")) {
 			for (DoomSubSector s : subsectors) {
@@ -102,9 +100,7 @@ public class DoomNodeParser {
 		int x2 = x+ n.getDistanceX();
 		int y2 = y+ n.getDistanceY();
 		System.out.print(String.valueOf(x)+","+String.valueOf(y)+","+String.valueOf(x2)+","+String.valueOf(y2));
-		//drawLine(x/15,height-(y/15),x2/15,height-(y2/15),66,Material.WOOL,(byte)0);
-		//draw line
-		if (n.isIslSector()) {
+						if (n.isIslSector()) {
 			Bukkit.getScheduler().runTask(plugin, new Runnable(){
 
 				@Override
@@ -131,9 +127,7 @@ public class DoomNodeParser {
 
 
 public void fillSector(DoomSubSector s) {
-	//int se =s.getSegments()[0].getLine().getSector();
-	//int blockData = se%15; 
-	int[] a = normalize(vertices.get(s.getSegments()[0].getStartVertex()));
+			int[] a = normalize(vertices.get(s.getSegments()[0].getStartVertex()));
 	int[] b = normalize(vertices.get(s.getSegments()[0].getEndVertex()));
 	org.bukkit.util.Vector v = new org.bukkit.util.Vector(width-a[0],66,a[1]);
 	org.bukkit.util.Vector v2 = new org.bukkit.util.Vector(width-b[0],66,b[1]);
@@ -182,18 +176,14 @@ public void load(String wad_type, DoomLineParser doomLineParser) {
 	short[] values = new short[packets_of_size(4, lumps.get("VERTEXES")).length];
 	int packet_size = wad_type=="HEXEN"?16:14;
 	int i2 = 0;
+	for (int i = 0; i < packets_of_size(packet_size, lumps.get("SIDEDEFS")).length; i++) {
+		DoomSide s = new DoomSide(packets_of_size(30, lumps.get("SIDEDEFS"))[i]);
+		sides.add(s);
+	} 
 	for (int i = 0; i < packets_of_size(packet_size, lumps.get("LINEDEFS")).length; i++) {
-		DoomLine l = new DoomLine(packets_of_size(packet_size, lumps.get("LINEDEFS"))[i],doomLineParser);
-		DoomSide s = new DoomSide(packets_of_size(30, lumps.get("SIDEDEFS"))[i2]);
-		DoomSide[] sides = new DoomSide[l.is_one_sided()?1:2];
-		sides[0] = s;
-		i2++;
-		if (!l.is_one_sided()) {	
-			DoomSide s2 = new DoomSide(packets_of_size(30, lumps.get("SIDEDEFS"))[i2]);
-			sides[1] = s2;
-			i2++;	
-		}
-		lines.put(l,sides);	
+		DoomLine l = new DoomLine(packets_of_size(packet_size, lumps.get("LINEDEFS"))[i],doomLineParser,sides);
+
+		lines.add(l);	
 	} 
 
 	for (int i = 0; i < packets_of_size(4, lumps.get("VERTEXES")).length; i++) {

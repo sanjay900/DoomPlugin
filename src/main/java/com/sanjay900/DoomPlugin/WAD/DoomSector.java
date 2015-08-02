@@ -4,24 +4,18 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
-//this class store information about a sector
 public class DoomSector {
-	//Global variables, these are accessed by other objects that need information about a sector.
-	//Sector textures
-	String ceil = "Unknown";
+			String ceil = "Unknown";
 	String floor = "Unknown";
-	//Sector information
-	short ceilHeight = -1;
+		short ceilHeight = -1;
 	short floorHeight = -1;
 	short lightLevel = -1;
 	short type = -1;
 	short sectorTag = -1;
-	//Create a DoomSector object from a lump of data
-	public DoomSector(byte[] data) {
+		public DoomSector(byte[] data) {
 		ByteBuffer bb = ByteBuffer.wrap(data);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
-		//The divide by 16 is because doom and minecraft have differing scales. Minecraft works by blocks, doom works by pixels.
-		floorHeight = (short) (bb.getShort(0)/16);
+				floorHeight = (short) (bb.getShort(0)/16);
 		ceilHeight = (short) (bb.getShort(2)/16);
 		lightLevel = bb.getShort(20);
 		type = bb.getShort(22);

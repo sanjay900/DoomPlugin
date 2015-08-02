@@ -7,12 +7,8 @@ public class DoomLineParser {
 		/**The following just allows us to convert from doom number based LineTypes to an Enumeration thats
 		 * human understandable, for easier coding.
 		 */
-		//The below code was converted from the doom wiki, via regular expressions. It allows us to store information
-		//about a line in a human readable way, as the plan is to save this information as a script
-		//And to allow players to script levels.
-		LineTypes.put(0,new LineType(LineTypeCatagory.NoAction));
-		// Doors
-		LineTypes.put(1,new LineType(LineTypeCatagory.Door,LineTypeTriggerType.PushRepeat,LineTypeMotionSpeed.Slow,LineTypeDoorType.OpenWaitClose,4,LineTypeMiscellaneous.MonsterActivated));
+								LineTypes.put(0,new LineType(LineTypeCatagory.NoAction));
+				LineTypes.put(1,new LineType(LineTypeCatagory.Door,LineTypeTriggerType.PushRepeat,LineTypeMotionSpeed.Slow,LineTypeDoorType.OpenWaitClose,4,LineTypeMiscellaneous.MonsterActivated));
 		LineTypes.put(117,new LineType(LineTypeCatagory.Door,LineTypeTriggerType.PushRepeat,LineTypeMotionSpeed.Fast,LineTypeDoorType.OpenWaitClose,4));
 		LineTypes.put(63,new LineType(LineTypeCatagory.Door,LineTypeTriggerType.SwitchRepeat,LineTypeMotionSpeed.Slow,LineTypeDoorType.OpenWaitClose,4));
 		LineTypes.put(114,new LineType(LineTypeCatagory.Door,LineTypeTriggerType.SwitchRepeat,LineTypeMotionSpeed.Fast,LineTypeDoorType.OpenWaitClose,4));
@@ -57,8 +53,7 @@ public class DoomLineParser {
 		LineTypes.put(133,new LineType(LineTypeCatagory.Door,LineTypeTriggerType.SwitchOnce,LineTypeMotionSpeed.Fast,LineTypeDoorType.OpenStayOpen,LineTypeDoorLock.Blue));
 		LineTypes.put(135,new LineType(LineTypeCatagory.Door,LineTypeTriggerType.SwitchOnce,LineTypeMotionSpeed.Fast,LineTypeDoorType.OpenStayOpen,LineTypeDoorLock.Red));
 		LineTypes.put(137,new LineType(LineTypeCatagory.Door,LineTypeTriggerType.SwitchOnce,LineTypeMotionSpeed.Fast,LineTypeDoorType.OpenStayOpen,LineTypeDoorLock.Yellow));
-		// Floors
-		LineTypes.put(60,new LineType(LineTypeCatagory.FloorMover,LineTypeTriggerType.SwitchRepeat,LineTypeDirection.Down,LineTypeMotionSpeed.Slow,LineTypeDestination.LowestNeighborFloor));
+				LineTypes.put(60,new LineType(LineTypeCatagory.FloorMover,LineTypeTriggerType.SwitchRepeat,LineTypeDirection.Down,LineTypeMotionSpeed.Slow,LineTypeDestination.LowestNeighborFloor));
 		LineTypes.put(23,new LineType(LineTypeCatagory.FloorMover,LineTypeTriggerType.SwitchOnce,LineTypeDirection.Down,LineTypeMotionSpeed.Slow,LineTypeDestination.LowestNeighborFloor));
 		LineTypes.put(82,new LineType(LineTypeCatagory.FloorMover,LineTypeTriggerType.WalkRepeat,LineTypeDirection.Down,LineTypeMotionSpeed.Slow,LineTypeDestination.LowestNeighborFloor));
 		LineTypes.put(38,new LineType(LineTypeCatagory.FloorMover,LineTypeTriggerType.WalkOnce,LineTypeDirection.Down,LineTypeMotionSpeed.Slow,LineTypeDestination.LowestNeighborFloor));
@@ -119,8 +114,7 @@ public class DoomLineParser {
 		LineTypes.put(241,new LineType(LineTypeCatagory.FloorMover,LineTypeTriggerType.SwitchOnce,LineTypeDirection.None,LineTypeSectorPropertyChanger.CopyTextureAndType,LineTypeDestination.ShortestLowerTexture,LineTypeModel.AdjacentNumerical));
 		LineTypes.put(240,new LineType(LineTypeCatagory.FloorMover,LineTypeTriggerType.WalkRepeat,LineTypeDirection.None,LineTypeSectorPropertyChanger.CopyTextureAndType,LineTypeDestination.ShortestLowerTexture,LineTypeModel.AdjacentNumerical));
 		LineTypes.put(239,new LineType(LineTypeCatagory.FloorMover,LineTypeTriggerType.WalkOnce,LineTypeDirection.None,LineTypeSectorPropertyChanger.CopyTextureAndType,LineTypeDestination.ShortestLowerTexture,LineTypeModel.AdjacentNumerical));
-		// Ceilings
-		LineTypes.put(43,new LineType(LineTypeCatagory.CeilingMover,LineTypeTriggerType.SwitchRepeat,LineTypeDirection.Down,LineTypeMotionSpeed.Fast,LineTypeDestination.Floor));
+				LineTypes.put(43,new LineType(LineTypeCatagory.CeilingMover,LineTypeTriggerType.SwitchRepeat,LineTypeDirection.Down,LineTypeMotionSpeed.Fast,LineTypeDestination.Floor));
 		LineTypes.put(41,new LineType(LineTypeCatagory.CeilingMover,LineTypeTriggerType.SwitchOnce,LineTypeDirection.Down,LineTypeMotionSpeed.Fast,LineTypeDestination.Floor));
 		LineTypes.put(152,new LineType(LineTypeCatagory.CeilingMover,LineTypeTriggerType.WalkRepeat,LineTypeDirection.Down,LineTypeMotionSpeed.Fast,LineTypeDestination.Floor));
 		LineTypes.put(145,new LineType(LineTypeCatagory.CeilingMover,LineTypeTriggerType.WalkOnce,LineTypeDirection.Down,LineTypeMotionSpeed.Fast,LineTypeDestination.Floor));
@@ -140,8 +134,7 @@ public class DoomLineParser {
 		LineTypes.put(204,new LineType(LineTypeCatagory.CeilingMover,LineTypeTriggerType.SwitchOnce,LineTypeDirection.Down,LineTypeMotionSpeed.Slow,LineTypeDestination.HighestNeighborFloor));
 		LineTypes.put(202,new LineType(LineTypeCatagory.CeilingMover,LineTypeTriggerType.WalkRepeat,LineTypeDirection.Down,LineTypeMotionSpeed.Slow,LineTypeDestination.HighestNeighborFloor));
 		LineTypes.put(200,new LineType(LineTypeCatagory.CeilingMover,LineTypeTriggerType.WalkOnce,LineTypeDirection.Down,LineTypeMotionSpeed.Slow,LineTypeDestination.HighestNeighborFloor));
-		// Platforms and lifts
-		LineTypes.put(66,new LineType(LineTypeCatagory.Platform,LineTypeTriggerType.SwitchRepeat,LineTypeMotionSpeed.Slow,LineTypeSectorPropertyChanger.CopyTexture,LineTypeModel.TriggerSector,24));
+				LineTypes.put(66,new LineType(LineTypeCatagory.Platform,LineTypeTriggerType.SwitchRepeat,LineTypeMotionSpeed.Slow,LineTypeSectorPropertyChanger.CopyTexture,LineTypeModel.TriggerSector,24));
 		LineTypes.put(15,new LineType(LineTypeCatagory.Platform,LineTypeTriggerType.SwitchOnce,LineTypeMotionSpeed.Slow,LineTypeSectorPropertyChanger.CopyTexture,LineTypeModel.TriggerSector,24));
 		LineTypes.put(148,new LineType(LineTypeCatagory.Platform,LineTypeTriggerType.WalkRepeat,LineTypeMotionSpeed.Slow,LineTypeSectorPropertyChanger.CopyTexture,LineTypeModel.TriggerSector,24));
 		LineTypes.put(143,new LineType(LineTypeCatagory.Platform,LineTypeTriggerType.WalkOnce,LineTypeMotionSpeed.Slow,LineTypeSectorPropertyChanger.CopyTexture,LineTypeModel.TriggerSector,24));
@@ -172,8 +165,7 @@ public class DoomLineParser {
 		LineTypes.put(121,new LineType(LineTypeCatagory.Platform,LineTypeTriggerType.WalkOnce,LineTypeMotionSpeed.Fast,3,LineTypeDestination.LowestNeighborFloor));
 		LineTypes.put(211,new LineType(LineTypeCatagory.Platform,LineTypeTriggerType.SwitchRepeat,LineTypeMotionSpeed.Instant,LineTypeDestination.Ceiling));
 		LineTypes.put(212,new LineType(LineTypeCatagory.Platform,LineTypeTriggerType.WalkRepeat,LineTypeMotionSpeed.Instant,LineTypeDestination.Ceiling));
-		// Crushers
-		LineTypes.put(184,new LineType(LineTypeCatagory.Crusher,LineTypeTriggerType.SwitchRepeat,LineTypeMotionSpeed.Slow));
+				LineTypes.put(184,new LineType(LineTypeCatagory.Crusher,LineTypeTriggerType.SwitchRepeat,LineTypeMotionSpeed.Slow));
 		LineTypes.put(49,new LineType(LineTypeCatagory.Crusher,LineTypeTriggerType.SwitchOnce,LineTypeMotionSpeed.Slow));
 		LineTypes.put(73,new LineType(LineTypeCatagory.Crusher,LineTypeTriggerType.WalkRepeat,LineTypeMotionSpeed.Slow));
 		LineTypes.put(25,new LineType(LineTypeCatagory.Crusher,LineTypeTriggerType.WalkOnce,LineTypeMotionSpeed.Slow));
@@ -189,8 +181,7 @@ public class DoomLineParser {
 		LineTypes.put(168,new LineType(LineTypeCatagory.Crusher,LineTypeTriggerType.SwitchOnce,LineTypeDestination.Stop));
 		LineTypes.put(74,new LineType(LineTypeCatagory.Crusher,LineTypeTriggerType.WalkRepeat,LineTypeDestination.Stop));
 		LineTypes.put(57,new LineType(LineTypeCatagory.Crusher,LineTypeTriggerType.WalkOnce,LineTypeDestination.Stop));
-		// Stairs
-		LineTypes.put(258,new LineType(LineTypeCatagory.Stair,LineTypeTriggerType.SwitchRepeat,LineTypeDirection.Up,LineTypeMotionSpeed.Slow,LineTypeDestination.Unit8));
+				LineTypes.put(258,new LineType(LineTypeCatagory.Stair,LineTypeTriggerType.SwitchRepeat,LineTypeDirection.Up,LineTypeMotionSpeed.Slow,LineTypeDestination.Unit8));
 		LineTypes.put(7,new LineType(LineTypeCatagory.Stair,LineTypeTriggerType.SwitchOnce,LineTypeDirection.Up,LineTypeMotionSpeed.Slow,LineTypeDestination.Unit8));
 		LineTypes.put(256,new LineType(LineTypeCatagory.Stair,LineTypeTriggerType.WalkRepeat,LineTypeDirection.Up,LineTypeMotionSpeed.Slow,LineTypeDestination.Unit8));
 		LineTypes.put(8,new LineType(LineTypeCatagory.Stair,LineTypeTriggerType.WalkOnce,LineTypeDirection.Up,LineTypeMotionSpeed.Slow,LineTypeDestination.Unit8));
@@ -198,8 +189,7 @@ public class DoomLineParser {
 		LineTypes.put(127,new LineType(LineTypeCatagory.Stair,LineTypeTriggerType.SwitchOnce,LineTypeDirection.Up,LineTypeMotionSpeed.Fast,LineTypeDestination.Unit16));
 		LineTypes.put(257,new LineType(LineTypeCatagory.Stair,LineTypeTriggerType.WalkRepeat,LineTypeDirection.Up,LineTypeMotionSpeed.Fast,LineTypeDestination.Unit16));
 		LineTypes.put(100,new LineType(LineTypeCatagory.Stair,LineTypeTriggerType.WalkOnce,LineTypeDirection.Up,LineTypeMotionSpeed.Fast,LineTypeDestination.Unit16));
-		// Boom elevators
-		LineTypes.put(230,new LineType(LineTypeCatagory.Elevator,LineTypeTriggerType.SwitchRepeat,LineTypeMotionSpeed.Fast,LineTypeDestination.NextHighestNeighborFloor));
+				LineTypes.put(230,new LineType(LineTypeCatagory.Elevator,LineTypeTriggerType.SwitchRepeat,LineTypeMotionSpeed.Fast,LineTypeDestination.NextHighestNeighborFloor));
 		LineTypes.put(229,new LineType(LineTypeCatagory.Elevator,LineTypeTriggerType.SwitchOnce,LineTypeMotionSpeed.Fast,LineTypeDestination.NextHighestNeighborFloor));
 		LineTypes.put(228,new LineType(LineTypeCatagory.Elevator,LineTypeTriggerType.WalkRepeat,LineTypeMotionSpeed.Fast,LineTypeDestination.NextHighestNeighborFloor));
 		LineTypes.put(227,new LineType(LineTypeCatagory.Elevator,LineTypeTriggerType.WalkOnce,LineTypeMotionSpeed.Fast,LineTypeDestination.NextHighestNeighborFloor));
@@ -211,8 +201,7 @@ public class DoomLineParser {
 		LineTypes.put(237,new LineType(LineTypeCatagory.Elevator,LineTypeTriggerType.SwitchOnce,LineTypeMotionSpeed.Fast,LineTypeDestination.CurrentFloor));
 		LineTypes.put(236,new LineType(LineTypeCatagory.Elevator,LineTypeTriggerType.WalkRepeat,LineTypeMotionSpeed.Fast,LineTypeDestination.CurrentFloor));
 		LineTypes.put(235,new LineType(LineTypeCatagory.Elevator,LineTypeTriggerType.WalkOnce,LineTypeMotionSpeed.Fast,LineTypeDestination.CurrentFloor));
-		// Lighting
-		LineTypes.put(139,new LineType(LineTypeCatagory.LightChanger,LineTypeTriggerType.SwitchRepeat,LineTypeLighting.Unit35));
+				LineTypes.put(139,new LineType(LineTypeCatagory.LightChanger,LineTypeTriggerType.SwitchRepeat,LineTypeLighting.Unit35));
 		LineTypes.put(170,new LineType(LineTypeCatagory.LightChanger,LineTypeTriggerType.SwitchOnce,LineTypeLighting.Unit35));
 		LineTypes.put(79,new LineType(LineTypeCatagory.LightChanger,LineTypeTriggerType.WalkRepeat,LineTypeLighting.Unit35));
 		LineTypes.put(35,new LineType(LineTypeCatagory.LightChanger,LineTypeTriggerType.WalkOnce,LineTypeLighting.Unit35));
@@ -232,15 +221,13 @@ public class DoomLineParser {
 		LineTypes.put(172,new LineType(LineTypeCatagory.LightChanger,LineTypeTriggerType.SwitchOnce,LineTypeLighting.Blinking));
 		LineTypes.put(156,new LineType(LineTypeCatagory.LightChanger,LineTypeTriggerType.WalkRepeat,LineTypeLighting.Blinking));
 		LineTypes.put(17,new LineType(LineTypeCatagory.LightChanger,LineTypeTriggerType.WalkOnce,LineTypeLighting.Blinking));
-		// Exits
-		LineTypes.put(11,new LineType(LineTypeCatagory.Exit,LineTypeTriggerType.SwitchOnce));
+				LineTypes.put(11,new LineType(LineTypeCatagory.Exit,LineTypeTriggerType.SwitchOnce));
 		LineTypes.put(52,new LineType(LineTypeCatagory.Exit,LineTypeTriggerType.WalkOnce));
 		LineTypes.put(197,new LineType(LineTypeCatagory.Exit,LineTypeTriggerType.GunOnce));
 		LineTypes.put(51,new LineType(LineTypeCatagory.Exit,LineTypeTriggerType.SwitchOnce,LineTypeMiscellaneous.SecretExit));
 		LineTypes.put(124,new LineType(LineTypeCatagory.Exit,LineTypeTriggerType.WalkOnce,LineTypeMiscellaneous.SecretExit));
 		LineTypes.put(198,new LineType(LineTypeCatagory.Exit,LineTypeTriggerType.GunOnce,LineTypeMiscellaneous.SecretExit));
-		// Teleports
-		LineTypes.put(195,new LineType(LineTypeCatagory.Teleport,LineTypeTriggerType.SwitchRepeat));
+				LineTypes.put(195,new LineType(LineTypeCatagory.Teleport,LineTypeTriggerType.SwitchRepeat));
 		LineTypes.put(174,new LineType(LineTypeCatagory.Teleport,LineTypeTriggerType.SwitchOnce));
 		LineTypes.put(97,new LineType(LineTypeCatagory.Teleport,LineTypeTriggerType.WalkRepeat));
 		LineTypes.put(39,new LineType(LineTypeCatagory.Teleport,LineTypeTriggerType.WalkOnce));
@@ -260,16 +247,13 @@ public class DoomLineParser {
 		LineTypes.put(266,new LineType(LineTypeCatagory.Teleport,LineTypeTriggerType.WalkOnce,LineTypeMiscellaneous.SilentTeleporter,LineTypeMiscellaneous.LineTeleporter,LineTypeMiscellaneous.MonsterActivated));
 		LineTypes.put(265,new LineType(LineTypeCatagory.Teleport,LineTypeTriggerType.WalkRepeat,LineTypeMiscellaneous.SilentTeleporter,LineTypeMiscellaneous.LineTeleporter,LineTypeMiscellaneous.ReverseTeleporter,LineTypeMiscellaneous.MonsterActivated));
 		LineTypes.put(264,new LineType(LineTypeCatagory.Teleport,LineTypeTriggerType.WalkOnce,LineTypeMiscellaneous.SilentTeleporter,LineTypeMiscellaneous.LineTeleporter,LineTypeMiscellaneous.ReverseTeleporter,LineTypeMiscellaneous.MonsterActivated));
-		// Donuts
-		LineTypes.put(191,new LineType(LineTypeCatagory.Donut,LineTypeTriggerType.SwitchRepeat));
+				LineTypes.put(191,new LineType(LineTypeCatagory.Donut,LineTypeTriggerType.SwitchRepeat));
 		LineTypes.put(9,new LineType(LineTypeCatagory.Donut,LineTypeTriggerType.SwitchOnce));
 		LineTypes.put(155,new LineType(LineTypeCatagory.Donut,LineTypeTriggerType.WalkRepeat));
 		LineTypes.put(146,new LineType(LineTypeCatagory.Donut,LineTypeTriggerType.WalkOnce));
 	}
-	//This class is whats actually responsible for storing line types.  The above just creates instances of it.
-	class LineType {
-		//Set a few variables to null / -1 so that we know they arent set
-		int lineTypeDelay = -1;
+		class LineType {
+				int lineTypeDelay = -1;
 		LineTypeCatagory lineTypeCatagory = null;
 		LineTypeTriggerType lineTypeTriggerType = null;
 		LineTypeDoorLock lineTypeDoorLock = null;
@@ -282,8 +266,7 @@ public class DoomLineParser {
 		LineTypeModel lineTypeModel = null;
 		LineTypeLighting lineTypeLighting  = null;
 
-		//Various constructors that take different configurations of a line and create linetypes from them.
-		public LineType(LineTypeCatagory lineTypeCatagory,
+				public LineType(LineTypeCatagory lineTypeCatagory,
 				LineTypeTriggerType lineTypeTriggerType, LineTypeDirection lineTypeDirection,
 				LineTypeMotionSpeed lineTypeMotionSpeed,
 				LineTypeDestination lineTypeDestination) {
@@ -506,9 +489,7 @@ public class DoomLineParser {
 
 
 	}
-	//These enumerations are all the different options a line can have applied to it. The above just creates linetypes that
-	//have this data embedded.
-	public enum LineTypeCatagory {
+			public enum LineTypeCatagory {
 		NoAction,Door,FloorMover,CeilingMover,Platform,Crusher,Stair,Elevator,LightChanger,Exit,Teleport,Donut
 	}
 	public enum LineTypeTriggerType {

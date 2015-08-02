@@ -6,9 +6,6 @@ import com.google.common.collect.Table;
 
 import org.bukkit.entity.Player;
 
-//I decided to copy this class from another plugin i had created, as i needed cooldowns in my plugin
-//to test if events have been spammed, for example so that you can't create a gliched door by spamming the
-//open and close key.
 /** 
  * 
  * This class represents a Cooldown, that lets you test if something has happened within a given time period.
@@ -17,8 +14,7 @@ import org.bukkit.entity.Player;
  * @see #tryCooldown(Player, String, long)
  */
 public class Cooldown {
-	//A table containing all cooldowns, tied to player UUID's, and a key
-    private static Table<UUID, String, Long> cooldowns = HashBasedTable.create();
+	    private static Table<UUID, String, Long> cooldowns = HashBasedTable.create();
  
     /**
      * Retrieve the number of milliseconds left until a given {@link cooldown} expires.
