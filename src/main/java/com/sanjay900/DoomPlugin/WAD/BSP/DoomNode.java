@@ -8,10 +8,12 @@ public class DoomNode {
 	short partLiney = -1;
 	short distanceX = -1;
 	short distanceY = -1;
-	short yUpBR = -1; 	short yLowBR = -1;
+	short yUpBR = -1; 	
+	short yLowBR = -1;
 	short xUpBR = -1;
 	short xLowBR = -1;
-	short yUpBL = -1; 	short yLowBL = -1;
+	short yUpBL = -1; 	
+	short yLowBL = -1;
 	short xUpBL = -1;
 	short xLowBL = -1;
 	short rChild = -1;

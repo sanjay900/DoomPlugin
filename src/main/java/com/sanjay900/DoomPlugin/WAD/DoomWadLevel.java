@@ -3,8 +3,7 @@ package com.sanjay900.DoomPlugin.WAD;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.GeneralPath;
-import java.awt.geom.Path2D;
-import java.awt.geom.PathIterator;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -14,24 +13,24 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.WorldType;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BlockIterator;
 import org.inventivetalent.bossbar.BossBarAPI;
 
-import com.google.common.primitives.Shorts;
+import com.google.common.primitives.Ints;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.sanjay900.DoomPlugin.DoomPlugin;
+import com.sanjay900.DoomPlugin.WAD.DoomBlockParser.BlockData;
 import com.sanjay900.DoomPlugin.WAD.DoomLine.SideType;
+import com.sanjay900.DoomPlugin.WAD.BSP.DoomGLSegment;
+import com.sanjay900.DoomPlugin.WAD.BSP.DoomGLSubSector;
 import com.sanjay900.DoomPlugin.WAD.BSP.DoomNode;
 import com.sanjay900.DoomPlugin.WAD.BSP.DoomSegment;
 import com.sanjay900.DoomPlugin.WAD.BSP.DoomSubSector;
@@ -39,16 +38,21 @@ import com.sanjay900.DoomPlugin.entities.items.DoomItem;
 import com.sanjay900.DoomPlugin.entities.mobs.DoomEntity;
 import com.sanjay900.DoomPlugin.entities.mobs.Imp;
 import com.sanjay900.DoomPlugin.levelElements.DoomLevel;
+import com.sanjay900.DoomPlugin.util.FaceUtil;
 import com.sk89q.worldedit.EditSession;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 public class DoomWadLevel {
 	DoomPlugin plugin;
 	World world;
 	String name = null;
 	LinkedHashMap<String,byte[]> lumps = new LinkedHashMap<>();
-	ArrayList<short[]> vertices = new ArrayList<>();
-	Short[] lower_left = new Short[2];
-	Short[] upper_right = new Short[2];
+	ArrayList<Point.Float> vertices = new ArrayList<>();
+	ArrayList<Point.Float> glvertices = new ArrayList<>();
+	int[] lower_left = new int[2];
+	int[] upper_right = new int[2];
 	int width = 0;
 	int height = 0;
 	ArrayList<DoomThing> things = new ArrayList<>();
@@ -56,12 +60,14 @@ public class DoomWadLevel {
 	ArrayList<DoomSector> sectors = new ArrayList<>();
 	ArrayList<DoomSubSector> subsectors = new ArrayList<>();
 	ArrayList<DoomSegment> segments = new ArrayList<>();
+	ArrayList<DoomGLSegment> glsegments = new ArrayList<>();
 	ArrayList<DoomLine> lines = new ArrayList<>();
 	ArrayList<DoomSide> sides = new ArrayList<>();
 	int[] sdhift = new int[2] ;
 	DoomBlockParser blockParser;
 	private UUID playerUUID;
 	DoomLineParser doomLineParser;
+	private ArrayList<DoomGLSubSector> glsubsectors = new ArrayList<>();;
 
 	public DoomWadLevel(String name, DoomPlugin plugin, UUID playerUUID, DoomLineParser doomLineParser) {
 		this.blockParser = new DoomBlockParser(this);
@@ -76,8 +82,9 @@ public class DoomWadLevel {
 			DoomSector s = new DoomSector(data);
 			sectors.add(s);	
 		}
-		short[] keys = new short[packets_of_size(4, lumps.get("VERTEXES")).length];
-		short[] values = new short[packets_of_size(4, lumps.get("VERTEXES")).length];
+		byte[] glverts= Arrays.copyOfRange(lumps.get("GL_VERT"), 4, lumps.get("GL_VERT").length);
+		int[] keys = new int[packets_of_size(4, lumps.get("VERTEXES")).length+packets_of_size(8, glverts).length];
+		int[] values = new int[packets_of_size(4, lumps.get("VERTEXES")).length+packets_of_size(8, glverts).length];
 		int packet_size = wad_type=="HEXEN"?16:14;
 		for (int i = 0; i < packets_of_size(30, lumps.get("SIDEDEFS")).length; i++) {
 			DoomSide s = new DoomSide(packets_of_size(30, lumps.get("SIDEDEFS"))[i]);
@@ -95,18 +102,35 @@ public class DoomWadLevel {
 			bb.order(ByteOrder.LITTLE_ENDIAN);
 			short x = bb.getShort();
 			short y = bb.getShort();
-			x = (short) (x);
-			y = (short) (y);
-			vertices.add(new short[]{x,y});
+			vertices.add(new Point.Float(x,y));
 			keys[i]=x;
 			values[i]=y;
 		}
+		int i2 = packets_of_size(4, lumps.get("VERTEXES")).length-1;
+		String name = "";
+		try {
+			name = new String(new byte[]{lumps.get("GL_VERT")[0],lumps.get("GL_VERT")[1],lumps.get("GL_VERT")[2],lumps.get("GL_VERT")[3]}, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		System.out.println(name);
+		System.out.println(packets_of_size(8, glverts).length);
+
+		for (int i = 0; i < packets_of_size(8, glverts).length; i++) {
+			ByteBuffer bb = ByteBuffer.wrap(packets_of_size(8, glverts)[i]);
+			bb.order(ByteOrder.LITTLE_ENDIAN);
+			int x = bb.getInt();
+			int y = bb.getInt();
+			glvertices.add(new Point.Float(x/65536f,y/65536f));
+			keys[i2+i]=x/65536;
+			values[i2+i]=y/65536;
+		}
 
 		BossBarAPI.setHealth(Bukkit.getPlayer(playerUUID), 20);
-		lower_left[0] = Shorts.min(keys);
-		lower_left[1]= Shorts.min(values);
-		upper_right[0] = Shorts.max(keys);
-		upper_right[1] = Shorts.max(values);
+		lower_left[0] = Ints.min(keys);
+		lower_left[1]= Ints.min(values);
+		upper_right[0] = Ints.max(keys);
+		upper_right[1] = Ints.max(values);
 		width = upper_right[0] - lower_left[0];
 		height = upper_right[1] - lower_left[1];
 
@@ -114,6 +138,10 @@ public class DoomWadLevel {
 		for (byte[] data : packets_of_size(12, lumps.get("SEGS"))) {
 			DoomSegment s = new DoomSegment(data, lines);
 			segments.add(s);	
+		}
+		for (byte[] data : packets_of_size(10, lumps.get("GL_SEGS"))) {
+			DoomGLSegment s = new DoomGLSegment(data, lines);
+			glsegments.add(s);	
 		}
 		BossBarAPI.setHealth(Bukkit.getPlayer(playerUUID), 40);
 		for (byte[] data :  packets_of_size(28, lumps.get("NODES"))) {
@@ -124,6 +152,10 @@ public class DoomWadLevel {
 		for (byte[] data :packets_of_size(4, lumps.get("SSECTORS"))) {
 			DoomSubSector s = new DoomSubSector(data,segments);
 			subsectors.add(s);	
+		}
+		for (byte[] data :packets_of_size(4, lumps.get("GL_SSECT"))) {
+			DoomGLSubSector s = new DoomGLSubSector(data,glsegments);
+			glsubsectors.add(s);
 		}
 		BossBarAPI.setHealth(Bukkit.getPlayer(playerUUID),80);
 		for (byte[] data :packets_of_size(10, lumps.get("THINGS"))) {
@@ -245,31 +277,35 @@ public class DoomWadLevel {
 	}
 	public void buildLevel() {
 		setBar("[DOOM] Creating World", 1f);
-		Bukkit.getOnlinePlayers().forEach(p -> p.teleport(Bukkit.getWorlds().get(0).getSpawnLocation()));
+		//Bukkit.getOnlinePlayers().forEach(p -> p.teleport(Bukkit.getWorlds().get(0).getSpawnLocation()));
 		if (Bukkit.getWorld(name) != null) {
-
-			//getMultiverseCore().regenWorld(name, false, true, "");
+			//getMultiverseCore().regenWorld(name, false, false, "");
 		} else {
 			getMultiverseCore().getMVWorldManager().addWorld(name, Environment.NORMAL, "", WorldType.FLAT, false, "CleanroomGenerator:1,bedrock");
 		}
 		getMultiverseCore().getMVWorldManager().getMVWorld(name).setAllowMonsterSpawn(false);
 		getMultiverseCore().getMVWorldManager().getMVWorld(name).setAllowAnimalSpawn(false);
 		world = Bukkit.getWorld(name);
-		Bukkit.getOnlinePlayers().forEach(p -> p.teleport(Bukkit.getWorlds().get(1).getSpawnLocation()));
+		//Bukkit.getOnlinePlayers().forEach(p -> p.teleport(Bukkit.getWorlds().get(1).getSpawnLocation()));
 
 
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+			for (DoomGLSubSector s : glsubsectors) {
+				rayFill(s);
+			}
+		});
 		HashMap<DoomSector, ArrayList<Line>> coords = new HashMap<>();
 		for (DoomLine l: lines) {
-			short[] a = vertices.get(l.getA());
-			short[] b = vertices.get(l.getB());
+			Point.Float a = vertices.get(l.getA());
+			Point.Float b = vertices.get(l.getB());
 
 			if (l.twoSided) {
 				DoomSide sil = l.getLeftSide();
 				DoomSide sir = l.getRightSide();
 				DoomSector sl = sectors.get(sil.sectorNum);
 				DoomSector sr = sectors.get(sir.sectorNum);
-				Line sll = new Line(new Point(a[0]/20,a[1]/20),new Point(b[0]/20,b[1]/20),new Line(new Point(a[0],a[1]),new Point(b[0],b[1]),null, l, sil), l, sil);
-				Line slr = new Line(new Point(a[0]/20,a[1]/20),new Point(b[0]/20,b[1]/20),new Line(new Point(a[0],a[1]),new Point(b[0],b[1]),null, l, sir), l, sir);
+				Line sll = new Line(new Point.Float(a.x/32,a.y/32),new Point.Float(b.x/32,b.y/32), l, sil);
+				Line slr = new Line(new Point.Float(a.x/32,a.y/32),new Point.Float(b.x/32,b.y/32), l, sir);
 				if (!coords.containsKey(sl)) 
 					coords.put(sl, new ArrayList<Line>());
 				coords.get(sl).add(sll);
@@ -277,31 +313,26 @@ public class DoomWadLevel {
 					coords.put(sr, new ArrayList<Line>());
 				coords.get(sr).add(slr);
 
-				drawLine(slr,sr);
-				drawLine(sll,sl);
+				drawTwoSidedLine(sll,slr,sl,sr);
 			} else {
 				DoomSide sil = l.getLeftSide();
 				DoomSide sir = l.getRightSide();
 				if (l.getDisabledSide() == SideType.LEFT) {
-					Line slr = new Line(new Point(a[0]/20,a[1]/20),new Point(b[0]/20,b[1]/20),new Line(new Point(a[0],a[1]),new Point(b[0],b[1]),null, l, sir), l, sir);
+					Line slr = new Line(new Point.Float(a.x/32,a.y/32),new Point.Float(b.x/32,b.y/32), l, sir);
 					DoomSector sr = sectors.get(sir.sectorNum);
-					drawLine(slr,sr);
+					drawOneSidedLine(slr,sr);
 					if (!coords.containsKey(sr)) 
 						coords.put(sr, new ArrayList<Line>());
 					coords.get(sr).add(slr);
 				} else if (l.getDisabledSide() == SideType.RIGHT) {
-					Line sll = new Line(new Point(a[0]/20,a[1]/20),new Point(b[0]/20,b[1]/20),new Line(new Point(a[0],a[1]),new Point(b[0],b[1]),null, l, sil), l, sil);
+					Line sll = new Line(new Point.Float(a.x/32,a.y/32),new Point.Float(b.x/32,b.y/32), l, sil);
 					DoomSector sl = sectors.get(sil.sectorNum);
-					drawLine(sll,sl);
+					drawOneSidedLine(sll,sl);
 					if (!coords.containsKey(sl)) 
 						coords.put(sl, new ArrayList<Line>());
 					coords.get(sl).add(sll);
 				}
 			}
-		}
-		System.out.println("Ray fill.");
-		for (DoomSector s : sectors) {
-			rayFill(coords.get(s),s);
 		}
 
 
@@ -316,80 +347,156 @@ public class DoomWadLevel {
 
 		throw new RuntimeException("Multiverse not found!");
 	}
-	static double[][] getPoints(Path2D path) {
-	    List<double[]> pointList = new ArrayList<double[]>();
-	    double[] coords = new double[6];
-	    int numSubPaths = 0;
-	    for (PathIterator pi = path.getPathIterator(null);
-	         ! pi.isDone();
-	         pi.next()) {
-	        switch (pi.currentSegment(coords)) {
-	        case PathIterator.SEG_MOVETO:
-	            pointList.add(Arrays.copyOf(coords, 2));
-	            ++ numSubPaths;
-	            break;
-	        case PathIterator.SEG_LINETO:
-	            pointList.add(Arrays.copyOf(coords, 2));
-	            break;
-	        case PathIterator.SEG_CLOSE:
-	            if (numSubPaths > 1) {
-	                throw new IllegalArgumentException("Path contains multiple subpaths");
-	            }
-	            return pointList.toArray(new double[pointList.size()][]);
-	        default:
-	            throw new IllegalArgumentException("Path contains curves");
-	        }
-	    }
-	    throw new IllegalArgumentException("Unclosed path");
-	}
-	byte d = 0;
-	public void rayFill(ArrayList<Line> lines,DoomSector s) {
-		if (d > 15) d = 0;
-		GeneralPath polyline = 
-				new GeneralPath(GeneralPath.WIND_EVEN_ODD, lines.size());
-		polyline.moveTo(lines.get(0).orig.p1.getX(),lines.get(0).orig.p1.getY());
-		for (Line l : lines) {
-			polyline.moveTo(l.orig.p1.getX(),l.orig.p1.getY());
-			polyline.lineTo(l.orig.p2.getX(),l.orig.p2.getY());	
-		}
-		polyline.closePath();
-		System.out.println(getPoints(polyline));
-		Rectangle bounds = polyline.getBounds();
-		for (int x = bounds.x; x < bounds.getWidth()+bounds.x; x++) {
-			for (int y = bounds.y; y < bounds.getHeight()+bounds.y; y++) {
-				if (polyline.contains(x, y)) {
-					world.getBlockAt((width-x)/20, 10+(s.floorHeight), y/20).setTypeIdAndData(Material.WOOL.getId(),d,false);
+	public HashMap<DoomSector,ArrayList<GeneralPath>> glssectors = new HashMap<>();
+	public void rayFill(DoomGLSubSector s) {
+		ArrayList<Line> lines = new ArrayList<>();
+		DoomSector sec = null;
+		for (DoomGLSegment seg : s.getSegments()) {
+			Point.Float p1;
+			if (seg.isStartVertGL()) {
+				p1=glvertices.get(seg.getStartVertex());
+			} else {
+				p1=vertices.get(seg.getStartVertex());
+			}
+			Point.Float p2;
+			if (seg.isEndVertGL()) {
+				p2=glvertices.get(seg.getEndVertex());
+			} else {
+				p2=vertices.get(seg.getEndVertex());
+			}
+			lines.add(new Line(p1, p2, null, null));
+			if (seg.isHasLine()) {
+				if (seg.getDirection() == 0)
+					sec = sectors.get(seg.getLine().leftSide.sectorNum);
+				else {
+					sec = sectors.get(seg.getLine().rightSide.sectorNum);	
 				}
 			}
 		}
-		d++;
-	}
+		final DoomSector sec2 = sec;
+		GeneralPath polyline = 
+				new GeneralPath(GeneralPath.WIND_EVEN_ODD, lines.size());
 
-	public void drawLine(Line line, DoomSector sector) {
-		drawLine(line,sector,10+sector.ceilHeight);
+		polyline.moveTo(lines.get(0).p1.getX(),lines.get(0).p1.getY());
+		for (Line l : lines) {
+			polyline.lineTo(l.p1.getX(),l.p1.getY());
+			polyline.lineTo(l.p2.getX(),l.p2.getY());	
+		}
+		polyline.closePath();
+		if (!glssectors.containsKey(sec2)) {
+			glssectors.put(sec2, new ArrayList<>());
+		}
+		ArrayList<GeneralPath> gp = glssectors.get(sec2);
+		gp.add(polyline);
+		glssectors.put(sec2, gp);
+		float h = 10+(sec2.floorHeight);
+		int dec = (int)((h-((int)h))*100);
+		BlockData b = blockParser.getFloor(sec2,dec);
+		h = 10+(sec2.ceilHeight);
+		int dec2 = (int)((h-((int)h))*100);
+		BlockData b2 = blockParser.getCeil(sec2,dec2);
+		Bukkit.getScheduler().runTask(plugin, () -> {
+			Rectangle bounds = polyline.getBounds();
+			for (int x = bounds.x; x < bounds.getWidth()+bounds.x; x++) {
+				for (int y = bounds.y; y < bounds.getHeight()+bounds.y; y++) {
+					if (polyline.contains(x, y)) {
+						world.getBlockAt(x/32, (int) (10+(sec2.floorHeight)), y/32).setTypeIdAndData(b.id,b.data,false);
+						world.getBlockAt(x/32, (int) (10+(sec2.ceilHeight)), y/32).setTypeIdAndData(b2.id,b2.data,false);
+					}
+				}
+			}
+		});
 	}
-	public void drawLine(Line line, DoomSector sector,int height) {
-		Location location = new Location(world,(width-line.p1.x),10+(sector.floorHeight),line.p1.y);
-		Location newLocation = new Location(world,(width-line.p2.x),10+(sector.floorHeight),line.p2.y);
-		int top = 10+height;
-		if (Math.floor(location.distance(newLocation)) < 1) {
-			for (int i = top > 0?0:top; i < (top > 0?top:0); i++) {
-				DoomBlockParser.BlockData data = blockParser.getId(!line.line.twoSided, line.side, i, top, sector);
-				location.getBlock().getRelative(0, i, 0).setTypeIdAndData(data.id,data.data, false);
+	public void drawLine(Location start, Location end, int fdec, int cdec, int top, String texture) {
+		BlockFace b = FaceUtil.getDirection(end.toVector().subtract(start.toVector()));
+		if (Math.floor(start.distance(end)) < 1) {
+			for (int y = 0;y<top; y++) {
+				DoomBlockParser.BlockData data = blockParser.getSide(texture, 0,y,top,b);
+				if (y == 0) {
+					data = blockParser.getSide(texture, 0,y, fdec, top,b);
+				}
+				if (y == top-1) {
+					data = blockParser.getSide(texture, 0,y, cdec, top,b);
+				}
+				start.getBlock().getRelative(0, y, 0).setTypeIdAndData(data.id,data.data, false);
 			}
 		} else {
-			BlockIterator blocksToAdd = new BlockIterator(location.getWorld(), location.toVector(), newLocation.toVector().subtract(location.toVector()), 0D, (int) Math.floor(location.distance(newLocation)));
+			BlockIterator blocksToAdd = new BlockIterator(start.getWorld(), start.toVector(), end.toVector().subtract(start.toVector()), 0D, (int) Math.floor(start.distance(end)));
 			List<Block> blocks = new ArrayList<>();
 			while(blocksToAdd.hasNext()) {
 				blocks.add(blocksToAdd.next());
 			}
-			for (int i2 = 0; i2 < blocks.size(); i2++) {
-				Block bl = blocks.get(i2);
-				for (int i = top > 0?0:top; i < (top > 0?top:0); i++) {
-					DoomBlockParser.BlockData data = blockParser.getId(!line.line.twoSided, line.side, i, top, sector);
-					//if (bl.getRelative(0, i, 0).getType() == Material.AIR)
-					bl.getRelative(0, i, 0).setTypeIdAndData(data.id,data.data, false);
+			for (int x = 0; x < blocks.size(); x++) {
+				Block bl = blocks.get(x);
+				for (int y = 0; y<top; y++) {
+					DoomBlockParser.BlockData data = blockParser.getSide(texture, x,y,top,b);
+					if (y == 0) {
+						data = blockParser.getSide(texture, x,y, fdec, top,b);
+					}
+					if (y == top-1) {
+						data = blockParser.getSide(texture, x,y, cdec, top,b);
+					}
+					bl.getRelative(0, y, 0).setTypeIdAndData(data.id,data.data, false);
 				}
+			}
+		}
+	}
+	public void drawOneSidedLine(Line line, DoomSector sector) {
+		Location location = new Location(world,line.p1.x,10+(sector.floorHeight),line.p1.y);
+		Location newLocation = new Location(world,line.p2.x,10+(sector.floorHeight),line.p2.y);
+		int top = (int) (10+sector.ceilHeight);
+		float h = 10+sector.ceilHeight;
+		int cdec = (int)((h-((int)h))*100);
+		float h2 = 10+sector.floorHeight;
+		int fdec = (int)((h2-((int)h2))*100);
+		drawLine(location, newLocation, fdec,cdec,top,line.side.midTex);
+		
+	}
+	public void drawTwoSidedLine(Line left,Line right, DoomSector sl,DoomSector sr) {
+		Location leftfloor = new Location(world,left.p1.x,10+(sl.floorHeight),left.p1.y);
+		Location leftfloordest = new Location(world,left.p2.x,10+(sl.floorHeight),left.p2.y);
+		Location rightfloor = new Location(world,right.p1.x,10+(sr.floorHeight),right.p1.y);
+		Location rightfloordest = new Location(world,right.p2.x,10+(sr.floorHeight),right.p2.y);
+		Location leftceil = new Location(world,left.p1.x,10+(sl.ceilHeight),left.p1.y);
+		Location leftceildest = new Location(world,left.p2.x,10+(sl.ceilHeight),left.p2.y);
+		Location rightceil = new Location(world,right.p1.x,10+(sr.ceilHeight),right.p1.y);
+		Location rightceildest = new Location(world,right.p2.x,10+(sr.ceilHeight),right.p2.y);
+		float h = 10+sl.floorHeight;
+		int lfdec = (int)((h-((int)h))*100);
+		h = 10+sl.ceilHeight;
+		int lcdec = (int)((h-((int)h))*100);
+		h = 10+sr.floorHeight;
+		int rfdec = (int)((h-((int)h))*100);
+		h = 10+sr.ceilHeight;
+		int rcdec = (int)((h-((int)h))*100);
+		if (sl.floorHeight < sr.floorHeight) {
+			//Lower texture between Left floor and right floor
+			drawLine(leftfloor,leftfloordest,lfdec,rfdec,(int) (sr.floorHeight-sl.floorHeight),left.side.lowerTex);
+			if (sl.ceilHeight < sr.ceilHeight) {
+				//Mid texture between Right floor and left ceil
+				//Upper texture between Left ceil and right ceil
+				drawLine(rightfloor,rightfloordest,rfdec,lcdec,(int) (sl.ceilHeight-sr.floorHeight),left.side.midTex);
+				drawLine(leftceil,leftceildest,lcdec,rcdec,(int) (sr.ceilHeight-sl.ceilHeight),left.side.upperTex);
+				
+			} else {
+				//Mid texture between Right floor and Right ceil
+				//Upper texture between Right ceil and Left ceil
+				drawLine(rightfloor,rightfloordest,rfdec,rcdec,(int) (sr.ceilHeight-sr.floorHeight),left.side.midTex);
+				drawLine(rightceil,rightceildest,rcdec,lcdec,(int) (sl.ceilHeight-sr.ceilHeight),left.side.upperTex);
+			}
+		} else {
+			//Lower texture between right floor and left floor
+			drawLine(rightfloor,rightfloordest,rfdec,lfdec,(int) (sl.floorHeight-sr.floorHeight),left.side.lowerTex);
+			if (sl.ceilHeight < sr.ceilHeight) {
+				//Mid texture between left floor and left ceil
+				//Upper texture between Left ceil and right ceil
+				drawLine(leftfloor,leftfloordest,lfdec,lcdec,(int) (sl.ceilHeight-sl.floorHeight),left.side.midTex);
+				drawLine(leftceil,leftceildest,lcdec,rcdec,(int) (sr.ceilHeight-sl.ceilHeight),left.side.upperTex);
+			} else {
+				//Mid texture between left floor and Right ceil
+				//Upper texture between Right ceil and Left ceil
+				drawLine(leftfloor,leftfloordest,lfdec,rcdec,(int) (sr.ceilHeight-sl.floorHeight),left.side.midTex);
+				drawLine(rightceil,rightceildest,rcdec,lcdec,(int) (sl.ceilHeight-sr.ceilHeight),left.side.upperTex);
 			}
 		}
 	}
@@ -397,9 +504,8 @@ public class DoomWadLevel {
 	@AllArgsConstructor
 	@Getter
 	private class Line {
-		Point p1;
-		Point p2;
-		Line orig;
+		Point.Float p1;
+		Point.Float p2;
 		DoomLine line;
 		DoomSide side;
 	}

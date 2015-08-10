@@ -105,11 +105,13 @@ public class DoomLevelParser {
 
 					sendMessage("Loaded levels. Level amount: "+String.valueOf(levels.size()));
 					sendMessage("We are now parsing the levels. This may take a while.");
-					for (DoomWadLevel l: levels) {
+					//TODO: Uncomment when first level converts
+					/*for (DoomWadLevel l: levels) {
 						setBar("[DOOM] Parsing level "+l.name+". Level "+levels.indexOf(l)+" out of "+levels.size(),1f);	
 						l.load(wad_type);
 
-					}
+					}*/
+					levels.get(0).load(wad_type);
 				} catch (IOException e) {
 					try {
 						if (ds != null) {
